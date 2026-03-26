@@ -32,7 +32,7 @@ public class StudentController(UmbracoHelper umbracoHelper, StudentService stude
             .Select(x =>
             {
 
-                var carNodes = x.Value<IEnumerable<IPublishedContent>>("studentSCar");
+                var carNodes = x.Value<IEnumerable<IPublishedContent>>("studentsCar");
                 //var carNode = carNodes?.FirstOrDefault();
 
                 return new Student
@@ -72,7 +72,7 @@ public class StudentController(UmbracoHelper umbracoHelper, StudentService stude
         if (studentNode == null)
             return NotFound();
 
-        var carNodes = studentNode.Value<IEnumerable<IPublishedContent>>("studentSCar");
+        var carNodes = studentNode.Value<IEnumerable<IPublishedContent>>("studentsCar");
         //var carNode = carNodes?.FirstOrDefault();
 
         var students = new Student
@@ -102,9 +102,9 @@ public class StudentController(UmbracoHelper umbracoHelper, StudentService stude
     // CREATE STUDENT
     [HttpPost]
     [Route("createstudent")]
-    public IActionResult CreateStudent([FromBody] StudentDto student)
+    public IActionResult CreateStudent([FromBody] StudentDto studentCreateDetails)
     {
-        studentService.CreateStudent(student);
+        studentService.CreateStudent(studentCreateDetails);
 
         return Ok("Student created successfully!");
     }
@@ -112,9 +112,9 @@ public class StudentController(UmbracoHelper umbracoHelper, StudentService stude
     // UPDATE STUDENT
     [HttpPut]
     [Route("updatestudent/{id}")]
-    public IActionResult UpdateStudent(Guid Id, [FromBody] StudentUpdateDto student)
+    public IActionResult UpdateStudent(Guid Id, [FromBody] StudentUpdateDto studentUpdateDetails)
     {
-        studentService.UpdateStudent(Id, student);
+        studentService.UpdateStudent(Id, studentUpdateDetails);
 
         return Ok("Student updated successfully!");
     }
@@ -122,9 +122,9 @@ public class StudentController(UmbracoHelper umbracoHelper, StudentService stude
     // PATCH STUDENT
     [HttpPatch]
     [Route("patchstudent/{id}")]
-    public IActionResult PatchStudent(Guid Id, [FromBody] StudentUpdateDto student)
+    public IActionResult PatchStudent(Guid Id, [FromBody] StudentUpdateDto studentPatchDetails)
     {
-        studentService.PatchStudent(Id, student);
+        studentService.PatchStudent(Id, studentPatchDetails);
 
         return Ok("Student patched successfully!");
     }

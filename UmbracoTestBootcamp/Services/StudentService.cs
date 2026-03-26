@@ -35,112 +35,126 @@ public class StudentService(IContentService contentService, IJsonSerializer json
     }
 
     // CREATE
-    public void CreateStudent(StudentDto studentDto)
+    public void CreateStudent(StudentDto studentCreateDetails)
     {
-        if (string.IsNullOrEmpty(studentDto.Name) || string.IsNullOrEmpty(studentDto.Email) || studentDto.Age <= 0)
+        if (string.IsNullOrEmpty(studentCreateDetails.Name) || string.IsNullOrEmpty(studentCreateDetails.Email) || studentCreateDetails.Age <= 0)
         {
             throw new ArgumentException("Invalid student data");
         }
 
         var parentId = Guid.Parse("a66d8900-ba78-44ba-981a-e54a91b9877b");
 
-        var newStudent = contentService.Create(studentDto.Name, parentId, "student");
-        newStudent.SetValue("email", studentDto.Email);
-        newStudent.SetValue("age", studentDto.Age);
+        var student = contentService.Create(studentCreateDetails.Name, parentId, "student");
+        student.SetValue("email", studentCreateDetails.Email);
+        student.SetValue("age", studentCreateDetails.Age);
 
-        if (studentDto.DateOfBirth.HasValue)
+        if (studentCreateDetails.DateOfBirth.HasValue)
         {
             //DateOnly dateOnly = DateOnly.FromDateTime(studentDto.DateOfBirth.Value);
-            DateTimeOffset dateTimeOffset = studentDto.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue);
+            DateTimeOffset dateTimeOffset = studentCreateDetails.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue);
 
             var dateObject = new DateOnlyValue { Date = dateTimeOffset };
 
             string jsonValue = jsonSerializer.Serialize(dateObject);
-            newStudent.SetValue("dateOfBirth", jsonValue);
+            student.SetValue("dateOfBirth", jsonValue);
         }
 
-        var carUdi = BuildCarUDIs(studentDto.StudentsCarId);
+        var carUdi = BuildCarUDIs(studentCreateDetails.StudentsCarId);
  
-        newStudent.SetValue("studentSCar", carUdi);
+        student.SetValue("studentsCar", carUdi);
      
 
-        contentService.Save(newStudent);
+        contentService.Save(student);
 
-        contentService.Publish(newStudent, ["*"]);
+        contentService.Publish(student, ["*"]);
     }
 
     // UPDATE PUT
-    public void UpdateStudent(Guid id, StudentUpdateDto student)
+    public void UpdateStudent(Guid id, StudentUpdateDto studentUpdateDetails)
     {
-        var updateStudent = contentService.GetById(id) ?? throw new ArgumentException("Student not found");
+        var student = contentService.GetById(id) ?? throw new ArgumentException("Student not found");
         
-        updateStudent.Name = student.Name;
-        updateStudent.SetValue("email", student.Email);
-        updateStudent.SetValue("age", student.Age);
+        if (!string.IsNullOrEmpty(studentUpdateDetails.Name))
+        {
+            student.Name = studentUpdateDetails.Name;
+        }
 
-        if (student.DateOfBirth.HasValue)
+        if (!string.IsNullOrEmpty(studentUpdateDetails.Email))
+        {
+            student.SetValue("email", studentUpdateDetails.Email);
+        }
+
+        if (studentUpdateDetails.Age.HasValue && studentUpdateDetails.Age.Value > 0)
+        {
+            student.SetValue("age", studentUpdateDetails.Age);
+        }
+
+        if (studentUpdateDetails.DateOfBirth.HasValue)
         {
             //DateOnly dateOnly = DateOnly.FromDateTime(studentDto.DateOfBirth.Value);
-            DateTimeOffset dateTimeOffset = student.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue);
+            DateTimeOffset dateTimeOffset = studentUpdateDetails.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue);
 
             var dateObject = new DateOnlyValue { Date = dateTimeOffset };
 
             string jsonValue = jsonSerializer.Serialize(dateObject);
-            updateStudent.SetValue("dateOfBirth", jsonValue);
+            student.SetValue("dateOfBirth", jsonValue);
         }
 
-        var carUdi = BuildCarUDIs(student.StudentsCarId);
+        var carUdi = BuildCarUDIs(studentUpdateDetails.StudentsCarId);
         if (carUdi != null)
         {
-            updateStudent.SetValue("studentSCar", carUdi);
+            student.SetValue("studentsCar", carUdi);
         }
         else
         {
-            updateStudent.SetValue("studentSCar", null);
+            student.SetValue("studentsCar", null);
         }
 
-        contentService.Save(updateStudent);
+        contentService.Save(student);
 
-        contentService.Publish(updateStudent, ["*"]);
+        contentService.Publish(student, ["*"]);
     }
 
     // UPDATE PATCH
-    public void PatchStudent(Guid id, StudentUpdateDto student)
+    public void PatchStudent(Guid id, StudentUpdateDto studentPatchDetails)
         {
-            var patchStudent = contentService.GetById(id) ?? throw new ArgumentException("Student not found");
+            var student = contentService.GetById(id) ?? throw new ArgumentException("Student not found");
             
-            if (!string.IsNullOrEmpty(student.Name))
+            if (!string.IsNullOrEmpty(studentPatchDetails.Name))
             {
-                patchStudent.Name = student.Name;
+                student.Name = studentPatchDetails.Name;
             }
-            if (!string.IsNullOrEmpty(student.Email))
+
+            if (!string.IsNullOrEmpty(studentPatchDetails.Email))
             {
-                patchStudent.SetValue("email", student.Email);
+                student.SetValue("email", studentPatchDetails.Email);
             }
-            if (student.Age.HasValue && student.Age.Value > 0)
+
+            if (studentPatchDetails.Age.HasValue && studentPatchDetails.Age.Value > 0)
             {
-                patchStudent.SetValue("age", student.Age.Value);
+                student.SetValue("age", studentPatchDetails.Age.Value);
             }
-            if (student.DateOfBirth.HasValue)
+
+            if (studentPatchDetails.DateOfBirth.HasValue)
             {
             //DateOnly dateOnly = DateOnly.FromDateTime(studentDto.DateOfBirth.Value);
-            DateTimeOffset dateTimeOffset = student.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue);
+            DateTimeOffset dateTimeOffset = studentPatchDetails.DateOfBirth.Value.ToDateTime(TimeOnly.MinValue);
 
             var dateObject = new DateOnlyValue { Date = dateTimeOffset };
 
             string jsonValue = jsonSerializer.Serialize(dateObject);
-            patchStudent.SetValue("dateOfBirth", jsonValue);
+            student.SetValue("dateOfBirth", jsonValue);
             }
-            if (student.StudentsCarId != null)
+            if (studentPatchDetails.StudentsCarId != null)
             {
-                var carUdi = BuildCarUDIs(student.StudentsCarId);
-                patchStudent.SetValue("studentSCar", carUdi);
+                var carUdi = BuildCarUDIs(studentPatchDetails.StudentsCarId);
+                student.SetValue("studentsCar", carUdi);
             }
            
-            contentService.Save(patchStudent);
+            contentService.Save(student);
     
             //var userId = -1;
-            contentService.Publish(patchStudent, ["*"]);
+            contentService.Publish(student, ["*"]);
     }
 
     // DELETE
