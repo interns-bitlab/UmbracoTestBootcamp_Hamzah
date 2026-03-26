@@ -1,0 +1,87 @@
+﻿@model UmbracoTestBootcamp.Models.Student.Student
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@Model.Name</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        .detail-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            width: 300px;
+        }
+
+            .detail-card p {
+                margin: 5px 0;
+                color: #666;
+            }
+
+        a {
+            display: block;
+            margin-top: 15px;
+        }
+
+        .detail-card ul {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .detail-card li {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .detail-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Student Details</h1>
+
+    <div class="detail-card">
+        <h2>@Model.Name</h2>
+        <p>Email: @Model.Email</p>
+        <p>Age: @Model.Age</p>
+		<p>Date of Birth: @Model.DateOfBirth</p>
+        <p>ID: @Model.Id</p>
+
+        <br />
+        <p><strong>CARS</strong></p>
+        @if (Model.StudentsCar != null && Model.StudentsCar.Count > 0)
+        {
+            <ol>
+                @foreach (var car in Model.StudentsCar)
+                {
+                    <li>
+                        <strong>Name: @car.Name</strong>
+                        <ul>
+                            <li>Id: @car.Id</li>
+                            <li>Make: @car.Make</li>
+                            <li>Model: @car.Model</li>
+                            <li>Year: @car.Year</li>
+                            <li>Price: RM @car.Price</li>
+                        </ul>
+                    </li>
+                }
+            </ol>
+        }
+
+        <a href="/students/viewstudents">Back to Student List</a>
+
+    </div>
+
+</body>
+
+</html>
