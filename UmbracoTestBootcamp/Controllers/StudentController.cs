@@ -57,7 +57,7 @@ public class StudentController(UmbracoHelper umbracoHelper, StudentService stude
             .ToList();
 
             //return Ok(students);
-        return View("StudentContent/GetStudent", students);
+        return View("GetStudent", students);
     }
 
     // VIEW BY ID
@@ -95,7 +95,7 @@ public class StudentController(UmbracoHelper umbracoHelper, StudentService stude
         };
 
         //return Ok(students);
-        return View("StudentContent/GetStudentById", students);
+        return View("GetStudentById", students);
     }
 
 
